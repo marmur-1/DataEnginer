@@ -1,3 +1,12 @@
 
 #vscode
-\.*
+.vscode
+
+#scala
+.bloop
+.metals
+**/project/project
+**/project/target
+**/project/metals.sbt
+**/target/
+.scalafmt.conf
