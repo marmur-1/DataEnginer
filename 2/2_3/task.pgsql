@@ -157,7 +157,7 @@ INSERT INTO "employees" (fio, birth, work_start, post, id_level, salary, id_depa
 	('Сотрудник7', DATE('2001-01-01'), DATE('2009-01-01'), 'Джуниор программист',2, 70000, 3, True),
 	('Сотрудник8', DATE('2002-01-01'), DATE('2009-01-01'), 'Тим лид',4, 80000, 3, False);
 
-UPDATE department SET id_director = 4 WHERE id=8;
+UPDATE department SET id_director = 8 WHERE id=3;
 
 INSERT INTO "assessment" (id_employee, year, quarter_1, quarter_2, quarter_3, quarter_4) VALUES
 	(6,2009,3,3,3,3),
