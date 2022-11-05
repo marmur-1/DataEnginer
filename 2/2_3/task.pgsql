@@ -1,9 +1,9 @@
-DROP TABLE "level" CASCADE;
-DROP TABLE "employees" CASCADE;
-DROP TABLE "department" CASCADE;
-DROP FUNCTION "department_quantity";
-DROP TABLE "assessment_mark" CASCADE;
-DROP TABLE "assessment" CASCADE;
+-- DROP TABLE "level" CASCADE;
+-- DROP TABLE "employees" CASCADE;
+-- DROP TABLE "department" CASCADE;
+-- DROP FUNCTION "department_quantity";
+-- DROP TABLE "assessment_mark" CASCADE;
+-- DROP TABLE "assessment" CASCADE;
 
 -- 1. Создать таблицу с основной информацией о сотрудниках: 
 -- 	ФИО, 
