@@ -1,3 +1,5 @@
 
 /logs/*
 __pycache__
+!dag_id=task_3_6
+!dag_id=first_dag
