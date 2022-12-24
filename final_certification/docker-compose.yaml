@@ -1,51 +1,14 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-#
-
-# Basic Airflow cluster configuration for CeleryExecutor with Redis and PostgreSQL.
-#
-# WARNING: This configuration is for local development. Do not use it in a production deployment.
-#
-# This configuration supports basic configuration using environment variables or an .env file
-# The following variables are supported:
-#
-# AIRFLOW_IMAGE_NAME           - Docker image name used to run Airflow.
-#                                Default: apache/airflow:2.5.0
-# AIRFLOW_UID                  - User ID in Airflow containers
-#                                Default: 50000
-# Those configurations are useful mostly in case of standalone testing/running Airflow in test/try-out mode
-#
-# _AIRFLOW_WWW_USER_USERNAME   - Username for the administrator account (if requested).
-#                                Default: airflow
-# _AIRFLOW_WWW_USER_PASSWORD   - Password for the administrator account (if requested).
-#                                Default: airflow
-# _PIP_ADDITIONAL_REQUIREMENTS - Additional PIP requirements to add when starting all containers.
-#                                Default: ''
-#
-# Feel free to modify this file to suit your needs.
----
 version: '3'
 x-airflow-common:
   &airflow-common
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.5.0}
+  # image: apache/airflow:2.5.0
   # build: .
+  build:
+    context: ./src
+    dockerfile: dockerfile/airflow.dockerfile
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -60,9 +23,9 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   volumes:
-    - ./docker/dags:/opt/airflow/dags
-    - ./docker/logs:/opt/airflow/logs
-    - ./docker/plugins:/opt/airflow/plugins
+    - ./dockermount/dags:/opt/airflow/dags
+    - ./dockermount/logs:/opt/airflow/logs
+    - ./dockermount/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -74,14 +37,16 @@ x-airflow-common:
 services:
   postgres:
     build:
-      context: ./src/docker
-      dockerfile: postgres.dockerfile
+      context: ./src
+      dockerfile: dockerfile/postgres.dockerfile
+    ports:
+      - 5000:5432
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     volumes:
-      - ./docker/postgres-db:/var/lib/postgresql/data
+      - ./dockermount/postgres-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
@@ -97,7 +62,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: airflow
     restart: always
     volumes:
-    - ./docker/pgadmin:/var/lib/pgadmin
+    - ./dockermount/pgadmin:/var/lib/pgadmin
     depends_on:
       <<: *airflow-common-depends-on
 
@@ -107,7 +72,7 @@ services:
       - 8080:3000
     restart: always
     volumes:
-      - ./docker/grafana:/var/lib/grafana
+      - ./dockermount/grafana:/var/lib/grafana
     depends_on:
       <<: *airflow-common-depends-on
 
@@ -121,7 +86,7 @@ services:
       timeout: 30s
       retries: 50
     volumes:
-      - ./docker/redis:/data
+      - ./dockermount/redis:/data
     restart: always
 
   airflow-webserver:
@@ -253,6 +218,7 @@ services:
           echo
         fi
         mkdir -p /sources/logs /sources/dags /sources/plugins
+        cp -r /opt/airflow/init /sources/dags
         chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
         exec /entrypoint airflow version
     # yamllint enable rule:line-length
@@ -265,7 +231,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
     volumes:
-      - ./docker:/sources
+      - ./dockermount:/sources
 
   airflow-cli:
     <<: *airflow-common

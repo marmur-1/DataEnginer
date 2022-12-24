@@ -11,4 +11,4 @@
 **/target/
 .scalafmt.conf
 
-**/final_certification/docker
+**/final_certification/dockermount
