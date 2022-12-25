@@ -146,7 +146,3 @@ docker-compose up -d
     * *URL*: postgres
     * *Логин*: airflow
     * *Пароль*: airflow
-
-### PgAdmin подключение сервера БД
-Для подключения сервера следуйте инструкциям из зиображения ниже
-![Screenshot](./img/1.png)
