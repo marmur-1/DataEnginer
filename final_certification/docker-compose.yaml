@@ -54,7 +54,9 @@ services:
     restart: always
 
   pgadmin:
-    image: dpage/pgadmin4:2022-12-14-1
+    build:
+      context: ./src
+      dockerfile: dockerfile/pgadmin.dockerfile
     ports:
       - 8100:80
     environment:
@@ -62,7 +64,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: airflow
     restart: always
     volumes:
-    - ./dockermount/pgadmin:/var/lib/pgadmin
+      - ./dockermount/pgadmin:/var/lib/pgadmin
     depends_on:
       <<: *airflow-common-depends-on
 
