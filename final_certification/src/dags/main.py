@@ -15,7 +15,7 @@ apikey = Variable.get("apikey",default_var="BV2KKAXL81BMBVWB")
 # место сохранения необработаных данных
 path_raw_data = Variable.get("path_raw_data_file",default_var="/opt/airflow/dags/")
 # список символов валют
-symbols = Variable.get("symbols",default_var="IBM, TSCO.LON, SHOP.TRT, GPV.TRV, DAI.DEX, RELIANCE.BSE, 600104.SHH, 000002.SHZ")
+symbols = Variable.get("symbols",default_var="IBM, GOOGL, META, AAPL, AMZN, TSLA, MMM, F, EA, ORCL")
 
 
 # Если файла с сырыми данными не существует то считается что скрипт запускается впервые
@@ -40,8 +40,9 @@ for symbol in symbols.replace(" ","").split(","):
     dag_id = "trade_"+symbol
     with DAG(
         dag_id="trade_"+symbol,
-        start_date=datetime.now(),
-        schedule=str(minute)+" */1 * * *"
+        start_date=datetime.now()-timedelta(hours=1),
+        schedule=str(minute)+" */1 * * *",
+        catchup=False
     ) as globals()[dag_id]:
         download_tickers_task_id = "download_tickers_task_"+symbol
         write_ticker_to_db_task_id = "write_ticker_to_db_task_"+symbol
