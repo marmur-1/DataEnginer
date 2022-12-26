@@ -38,4 +38,4 @@ def write_ticker_to_db(path_file="tickets.json"):
     cursor.close()
     conn.close()
 
-write_ticker_to_db(path_file="tickets.json")
+# write_ticker_to_db(path_file="tickets.json")

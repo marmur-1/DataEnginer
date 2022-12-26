@@ -1,15 +1,16 @@
-# первый тестовый DAGs
-from write_ticker_to_db import write_ticker_to_db
-from download_tickers import download_tickers
+import sys
+sys.path.insert(0, "/opt/airflow/dags/init")
+import os.path
 from datetime import datetime
 from datetime import timedelta
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
-import sys
-import os.path
-sys.path.insert(0, "/opt/airflow/dags/init")
+from write_ticker_to_db import write_ticker_to_db
+from download_tickers import download_tickers
+from create_days_analytics import create_days_analytics
+from create_days_analytics import check_days_analytics
 
 apikey = Variable.get("apikey", default_var="BV2KKAXL81BMBVWB")
 # место сохранения необработаных данных
@@ -28,13 +29,30 @@ def download_tickers_task(**kwargs):
     if not os.path.exists(path_raw_data+symbol+".json"):
         outputsize = "full"
     download_tickers(symbol, apikey, path_raw_data+symbol+".json", outputsize)
+
+
 # Перенос данных из файлов в БД игнорируя дубликаты
-
-
 def write_ticker_to_db_task(**kwargs):
     symbol = kwargs['symbol']
     write_ticker_to_db(path_raw_data+symbol+".json")
 
+# Проходит по таблице дневной аналитики.
+# текущий день создаётсяя всегда
+# Если нет дневной аналитики то создает
+# Если нет тикетов 5 дней подрят то выходит
+def create_days_analytics_task(**kwargs):
+    symbol = kwargs['symbol']
+    date=datetime.now()
+    id_day = (symbol+'_'+str(date.date()))
+    create_days_analytics(id_day)
+    i = 5
+    while i>=0:
+        date=date-timedelta(days=1)
+        id_day = (symbol+'_'+str(date.date()))
+        if check_days_analytics(id_day) == False:
+            if create_days_analytics(id_day) == True:
+                i = 5
+        i -= 1
 
 # Создание задач по символу
 minute = 0
@@ -50,6 +68,7 @@ for symbol in symbols.replace(" ", "").split(","):
     ) as globals()[dag_id]:
         download_tickers_task_id = "download_tickers_task_"+symbol
         write_ticker_to_db_task_id = "write_ticker_to_db_task_"+symbol
+        create_days_analytics_task_id = "create_days_analytics_task_"+symbol
 
         globals()[download_tickers_task_id] = PythonOperator(
             task_id="download_tickers",
@@ -63,6 +82,11 @@ for symbol in symbols.replace(" ", "").split(","):
             python_callable=write_ticker_to_db_task,
             provide_context=True
         )
-        globals()[download_tickers_task_id] >> globals()[
-            write_ticker_to_db_task_id]
+        globals()[create_days_analytics_task_id] = PythonOperator(
+            task_id="create_days_analytics",
+            op_kwargs={'symbol': symbol},
+            python_callable=create_days_analytics_task,
+            provide_context=True
+        )
+        globals()[download_tickers_task_id] >> globals()[write_ticker_to_db_task_id] >> globals()[create_days_analytics_task_id]
     minute += 1
