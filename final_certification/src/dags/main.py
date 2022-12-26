@@ -43,12 +43,12 @@ def write_ticker_to_db_task(**kwargs):
 def create_days_analytics_task(**kwargs):
     symbol = kwargs['symbol']
     date=datetime.now()
-    id_day = (symbol+'_'+str(date.date()))
+    id_day = (str(date.date())+'_'+symbol)
     create_days_analytics(id_day)
     i = 5
     while i>=0:
         date=date-timedelta(days=1)
-        id_day = (symbol+'_'+str(date.date()))
+        id_day = (str(date.date())+'_'+symbol)
         if check_days_analytics(id_day) == False:
             if create_days_analytics(id_day) == True:
                 i = 5

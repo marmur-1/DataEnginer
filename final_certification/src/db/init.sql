@@ -21,7 +21,7 @@ CREATE FUNCTION public.tickets_id_day() -- тригерная функция д�
     COST 100
 AS $BODY$
 BEGIN
-	NEW.id_day := concat(NEW.symbol, '_',NEW.timestamp::date);
+	NEW.id_day := concat(NEW.timestamp::date,'_',NEW.symbol);
 	RETURN NEW;
 END
 $BODY$;

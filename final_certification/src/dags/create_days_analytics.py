@@ -85,5 +85,5 @@ def create_days_analytics(id_day):
         return False
 
 
-# check_days_analytics(id_day="IBM_2022-12-12")
-# create_days_analytics(id_day="IBM_2022-12-12")
+# check_days_analytics(id_day="2022-12-12_IBM")
+# create_days_analytics(id_day="2022-12-12_IBM")
