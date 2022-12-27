@@ -9,12 +9,6 @@ def check_days_analytics(id_day):
                         password='airflow',
                         host='postgres')
 
-    # conn = psycopg2.connect(dbname='project',
-    #                         user='airflow',
-    #                         password='airflow',
-    #                         host='localhost',
-    #                         port=5000)
-
     cursor = conn.cursor()
     query = "SELECT count(*) FROM days_analytics WHERE id_day = %s;"
     cursor.execute(query,[id_day])
@@ -33,12 +27,6 @@ def create_days_analytics(id_day):
                         user='airflow',
                         password='airflow',
                         host='postgres')
-
-    # conn = psycopg2.connect(dbname='project',
-    #                         user='airflow',
-    #                         password='airflow',
-    #                         host='localhost',
-    #                         port=5000)
 
     cursor = conn.cursor()
 
@@ -83,7 +71,3 @@ def create_days_analytics(id_day):
         cursor.close()
         conn.close()
         return False
-
-
-# check_days_analytics(id_day="2022-12-12_IBM")
-# create_days_analytics(id_day="2022-12-12_IBM")

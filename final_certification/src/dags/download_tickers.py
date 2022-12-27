@@ -17,4 +17,3 @@ def download_tickers(symbol, apikey, path_file="tickets.json", outputsize="compa
     with open(path_file, "w", encoding='utf8') as file:
         json.dump(data, file, ensure_ascii=False)
 
-# download_tickers("IBM", "BV2KKAXL81BMBVWB", path_file="tickets.json", outputsize="full")

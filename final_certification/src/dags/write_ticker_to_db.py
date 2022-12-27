@@ -10,11 +10,6 @@ def write_ticker_to_db(path_file="tickets.json"):
                             password='airflow',
                             host='postgres')
 
-    # conn = psycopg2.connect(dbname='project',
-    #                         user='airflow',
-    #                         password='airflow',
-    #                         host='localhost',
-    #                         port=5000)
     cursor = conn.cursor()
 
     data = []
@@ -37,5 +32,3 @@ def write_ticker_to_db(path_file="tickets.json"):
     conn.commit()  
     cursor.close()
     conn.close()
-
-# write_ticker_to_db(path_file="tickets.json")

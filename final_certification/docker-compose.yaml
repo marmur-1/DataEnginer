@@ -39,8 +39,6 @@ services:
     build:
       context: ./src
       dockerfile: dockerfile/postgres.dockerfile
-    ports:
-      - 5000:5432
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
