@@ -146,3 +146,11 @@ docker-compose up -d
     * *URL*: postgres
     * *Логин*: airflow
     * *Пароль*: airflow
+
+<br>
+
+----------------------------------------------------------
+
+## ER-диаграмма
+
+![ScreenShot](./img/ER.png)
