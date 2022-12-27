@@ -37,14 +37,17 @@ def write_ticker_to_db_task(**kwargs):
     write_ticker_to_db(path_raw_data+symbol+".json")
 
 # Проходит по таблице дневной аналитики.
-# текущий день создаётсяя всегда
+# Последний день создаётся/обнавляется всегда
 # Если нет дневной аналитики то создает
 # Если нет тикетов 5 дней подрят то выходит
 def create_days_analytics_task(**kwargs):
     symbol = kwargs['symbol']
     date=datetime.now()
     id_day = (str(date.date())+'_'+symbol)
-    create_days_analytics(id_day)
+    i = 0
+    while create_days_analytics(id_day) == False:
+        date=date-timedelta(days=1)
+        id_day = (str(date.date())+'_'+symbol)
     i = 5
     while i>=0:
         date=date-timedelta(days=1)

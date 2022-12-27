@@ -69,7 +69,9 @@ services:
       <<: *airflow-common-depends-on
 
   grafana:
-    image: grafana/grafana:9.3.2
+    build:
+      context: ./src
+      dockerfile: dockerfile/grafana.dockerfile
     ports:
       - 8080:3000
     restart: always
