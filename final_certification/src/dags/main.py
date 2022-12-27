@@ -14,11 +14,9 @@ from create_days_analytics import check_days_analytics
 
 apikey = Variable.get("apikey", default_var="BV2KKAXL81BMBVWB")
 # место сохранения необработаных данных
-path_raw_data = Variable.get(
-    "path_raw_data_file", default_var="/opt/airflow/dags/")
+path_raw_data = Variable.get("path_raw_data_file", default_var="/opt/airflow/dags/")
 # список символов валют
-symbols = Variable.get(
-    "symbols", default_var="IBM, GOOGL, META, AAPL, AMZN, TSLA, MMM, F, EA, ORCL")
+symbols = Variable.get("symbols", default_var="IBM, GOOGL, META, AAPL, AMZN, TSLA, MMM, F, EA, ORCL")
 
 
 # Если файла с сырыми данными не существует то считается что скрипт запускается впервые
